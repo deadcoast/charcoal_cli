@@ -6,6 +6,7 @@ from typing import List
 
 from colorama import Fore, Style, init
 
+from charcoal_cli.charcoal_cli.modules.charcoal import cli_menu
 from rando_parser import pep508_identifier
 from rando_parser import pep517_backend_reference
 from rando_parser import python_identifier
@@ -81,7 +82,7 @@ def python_entrypoint_reference(value: str) -> bool:
     rest = module_match.group(2)
 
     if "[" in rest:
-        obj_match = re.match(r"([^[]+)\[(.+)\]", rest)
+        obj_match = re.match(r"([^[]+)\[(.+)]", rest)
         if not obj_match:
             return False
 
@@ -103,10 +104,7 @@ def python_entrypoint_reference(value: str) -> bool:
     module_parts = re.split(r"\.", module)
     identifiers = module_parts + re.split(r"\.", obj) if rest else module_parts
 
-    for i in identifiers:
-        if not python_identifier(i):
-            return False
-    return True
+    return all(python_identifier(i) for i in identifiers)
 
 
 def load_chat_logs(file_path):
@@ -231,7 +229,6 @@ if __name__ == '__main__':
         sys.exit(0)
     except Exception as e:
         logging.error("An unexpected error occurred", exc_info=True)
-        sys.exit(1)
         cli_menu()
         interactive_menu()
         main()
@@ -239,7 +236,7 @@ if __name__ == '__main__':
     except (KeyboardInterrupt, EOFError):
         print(f"{Fore.RED}Exiting the program. Goodbye!{Style.RESET_ALL}")
         sys.exit(0)
-    except Exception as e:
+    except RecursionError as e:
         logging.error("An unexpected error occurred", exc_info=True)
     try:
         pep508_identifier()
