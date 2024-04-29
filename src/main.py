@@ -78,16 +78,16 @@ def python_entrypoint_reference(value: str) -> bool:
     if not module_match:
         return False
 
-    module = module_match.group(1)
-    rest = module_match.group(2)
+    module = module_match[1]
+    rest = module_match[2]
 
     if "[" in rest:
         obj_match = re.match(r"([^[]+)\[(.+)]", rest)
         if not obj_match:
             return False
 
-        obj = obj_match.group(1)
-        extras_ = obj_match.group(2)
+        obj = obj_match[1]
+        extras_ = obj_match[2]
 
         if not extras_.endswith("]"):
             return False

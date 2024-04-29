@@ -2,7 +2,7 @@ import os
 import logging
 from colorama import Fore, Style
 
-from charcoal_cli.charcoal_cli.src.charcoal_cli_parser import load_chat_logs, extract_code_blocks, save_code_blocks_to_files
+from charcoal_cli.charcoal_cli.src.main import load_chat_logs, extract_code_blocks, save_code_blocks_to_files
 from charcoal_cli import get_paths_from_user, search_directories_for_files
 from charcoal_cli import extract_with_filters
 from charcoal_cli import PARSER_ONE, PARSER_TWO, PARSER_THREE, PARSER_FOUR
