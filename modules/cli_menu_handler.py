@@ -166,6 +166,30 @@ def file_path():
 
 
 def export export_paths():
+    """Extract Python code from chat logs and save to new files."""
+    if import_path:
+        print(f"Import path: {import_path}")
+    if export_path:
+        print(f"Export path: {export_path}")
+    else:
+        print(f"{Fore.RED}Export path is not set. Please set it first.{Style.RESET_ALL}")
+    import_path = input("Enter the path to your import directory: ")
+    export_path = input("Enter the path to your export directory: ")
+    return import_path, export_path
+
+    """Extract Python code from chat logs and save to new files."""
+    if import_path:
+        print(f"Import path: {import_path}")
+    if export_path:
+        print(f"Export path: {export_path}")
+    else:
+        print(f"{Fore.RED}Export path is not set. Please set it first.{Style.RESET_ALL}")
+    import_path = input("Enter the path to your import directory: ")
+    export_path = input("Enter the path to your export directory: ")
+
+        return import_path, export_path
+
+
 
 
 """Extract Python code from chat logs and save to new files."""
