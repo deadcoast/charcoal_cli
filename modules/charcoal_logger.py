@@ -1,10 +1,7 @@
 import logging
-import re
-import sys
-import os
 from typing import Optional
 
-from colorama import Fore, Style, init
+from colorama import init
 
 # Initialize colorama for colored CLI output
 init()
@@ -21,16 +18,20 @@ logger.addHandler(file_handler)
 
 # Setup logger for error logging
 logging.basicConfig(filename='charcoal_error.log',
-    level=logging.ERROR,
-    format='%(asctime)s:%(levelname)s:%(message)s')
+                    level=logging.ERROR,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
 
 # Setup logger
 logging.basicConfig(filename='error_log.log', level=logging.DEBUG, format='%(asctime)s:%(levelname)s:%(message)s')
 
 # Setup logger for info logging
 logging.basicConfig(filename='charcoal_info.log',
-    level=logging.INFO,
-    format='%(asctime)s:%(levelname)s:%(message)s')
+                    level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
+
+
+def charcoal_info_logger(message: str):
+    logger.info(message)
 
 
 # Exception for handling extraction related errors
