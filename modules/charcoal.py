@@ -3,6 +3,8 @@ import re
 from colorama import Fore, Style, init
 import logging
 
+from modules.charcoal_logger import ExtractionError
+
 # Initialize colorama
 init(autoreset=True)
 
@@ -11,9 +13,37 @@ logging.basicConfig(filename='charcoal_error.log',
                     level=logging.ERROR,
                     format='%(asctime)s:%(levelname)s:%(message)s')
 
+
+class CharcoalParserHandler:
+    """Handler class for parsing and extracting python code blocks."""
+
+    def __init__(self, chat_logs: str):
+        self.chat_logs = chat_logs
+        self.filters = [
+            r'(?:```python)(.*?)(?:```)',
+            r'(?<=```python\n)([\s\S]+?)(?=\n```)',
+            r'(?<!\\)`{3}python\n(.*?\n)`{3}',
+            r'(?<!`)```python\s+(.*?)\s+```(?!`)',
+        ]
+
+    def extract_code_blocks(self):
+        """Extract Python code blocks using multiple filters."""
+        for f in self.filters:
+            try:
+                return re.findall(f, self.chat_logs, re.DOTALL)
+            except re.error as e:
+                logging.error(f'Regex error: {e}')
+                raise ExtractionError(
+                    'Failed to extract code blocks due to a regex issue.'
+                ) from e
+
+        raise ExtractionError('Failed to extract code blocks due to no matches found.')
+
+
 # Advanced Regex patterns for Python code extraction resembling a multi-layered charcoal filtering process
 PARSER_ONE = r'(?:```python)(.*?)(?:```)'  # Coarse Sand - captures basic fenced code blocks
-PARSER_TWO = r'(?<=```python\n)([\s\S]+?)(?=\n```)'  # Fine Sand - more precise, includes newlines surrounding code blocks
+PARSER_TWO = r'(?<=```python\n)([\s\S]+?)(?=\n```)'  # Fine Sand - more precise, includes newlines surrounding code
+# blocks
 PARSER_THREE = r'(?<!\\)`{3}python\n(.*?\n)`{3}'  # Pebbles - excludes escaped backticks
 PARSER_FOUR = r'(?<!`)```python\s+(.*?)\s+```(?!`)'  # Charcoal - final filter, excludes surrounding single backticks
 

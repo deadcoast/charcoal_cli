@@ -2,45 +2,28 @@ import logging
 import os
 import re
 import sys
-from typing import List
+from typing import List, Optional
 
 from colorama import Fore, Style, init
 
-from charcoal_cli.charcoal_cli.modules.charcoal import cli_menu
-from rando_parser import pep508_identifier
-from rando_parser import pep517_backend_reference
-from rando_parser import python_identifier
-from charcoal_cli.charcoal_cli.modules.cli_menu_handler import coarse_sand_cli_menu
+from modules.cli_menu_handler import coarse_sand_cli_menu, cli_menu
+from scripts.trove_classifier import pep508_identifier, python_identifier, pep517_backend_reference
 
 # Initialize colorama for colored CLI output
 init(autoreset=True)
 
-# Setup a logger
-logger = logging.getLogger('CodeExtractor')
-logger.setLevel(logging.INFO)
-file_handler = logging.FileHandler('code_extractor.log')
-formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s')
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
+# Initialize colorama
+init()
 
 # Setup logger for error logging
 logging.basicConfig(filename='charcoal_error.log',
                     level=logging.ERROR,
                     format='%(asctime)s:%(levelname)s:%(message)s')
-
-# Initialize colorama
-init()
 
 # Set up logging to file
 logging.basicConfig(filename='error_log.log', level=logging.DEBUG,
                     format='%(asctime)s:%(levelname)s:%(message)s')
-# Initialize colorama
-init(autoreset=True)
 
-# Setup logger for error logging
-logging.basicConfig(filename='charcoal_error.log',
-                    level=logging.ERROR,
-                    format='%(asctime)s:%(levelname)s:%(message)s')
 
 # Advanced Regex patterns for Python code extraction resembling a multi-layered charcoal filtering process
 PARSER_ONE = r'(?:```python)(.*?)(?:```)'  # Coarse Sand - captures basic fenced code blocks
@@ -97,7 +80,7 @@ def python_entrypoint_reference(value: str) -> bool:
         if any(not pep508_identifier(x) for x in extras):
             return False
 
-        charcoal_cli_parser.logger.warn(f"`{value}` - using extras for entry points is not recommended")
+        python_entrypoint_reference.logger.warn(f"`{value}` - using extras for entry points is not recommended")
     else:
         obj = rest
 
@@ -105,45 +88,6 @@ def python_entrypoint_reference(value: str) -> bool:
     identifiers = module_parts + re.split(r"\.", obj) if rest else module_parts
 
     return all(python_identifier(i) for i in identifiers)
-
-# Exception for handling extraction related errors
-class ExtractionError(Exception):
-    """Exception raised for errors that occur during code extraction."""
-
-    def __init__(self, message: str, details: Optional[str] = None) -> None:
-        """
-        Initialize the class instance.
-
-        Args:
-            message (str): The message to be passed to the superclass.
-            details (Optional[str]): Additional details for the instance.
-
-        Returns:
-            None
-        """
-        super().__init__(message)
-        self._details = None
-
-        @property
-        def details(self):
-            return self._details
-
-        @details.setter
-        def details(self, value):
-            if value is not None:
-                # Perform validation logic here
-                self._details = value
-
-    def __str__(self):
-        return "An error occurred during code extraction."
-
-    def log_error_details(self):
-        logging.error(str(self))
-
-
-# Advanced Regex pattern for Python code block extraction
-PYTHON_CODE_BLOCK_PATTERN = r'```python\s+(.*?)\s+```'
-
 
 def read_file_content(file_path):
     """Read and return the content of the given file."""
@@ -167,14 +111,6 @@ def extract_python_code(content):
         raise ExtractionError(
             'Failed to extract code blocks due to a regex issue.'
         ) from py
-
-
-def quick_display_menu():
-    """Interactive CLI menu for user to choose actions."""
-    print(f"{Fore.YELLOW}Python Code Extractor Menu{Style.RESET_ALL}")
-    options = ["Extract Python code from file", "Exit"]
-    for i, option in enumerate(options, start=1):
-        print(f"{Fore.GREEN}{i}. {option}{Style.RESET_ALL}")
 
 
 def extract_code_from_file(file_path):
@@ -224,23 +160,21 @@ if __name__ == '__main__':
         sys.exit(0)
     except Exception as e:
         logging.error("An unexpected error occurred", exc_info=True)
-        cli_menu()
+        coarse_sand_cli_menu()
         interactive_menu()
         main()
         sys.exit(0)
     except (KeyboardInterrupt, EOFError):
         print(f"{Fore.RED}Exiting the program. Goodbye!{Style.RESET_ALL}")
         sys.exit(0)
-    except RecursionError as e:
-        logging.error("An unexpected error occurred", exc_info=True)
     try:
         pep508_identifier()
 
         pep517_backend_reference()
 
-        charcoal_cli_parser = pep517_backend_reference()
+        python_entrypoint_reference = pep517_backend_reference(  # type: ignore
+            "module:obj[extra1, extra2]")
 
         python_identifier()
     except ImportError:
         logger.error('Unexpected error occurred')
-
