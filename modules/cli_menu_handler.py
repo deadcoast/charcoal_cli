@@ -1,9 +1,11 @@
 import os
 import logging
 from colorama import Fore, Style, init
+from testtools import content
 
 from modules.charcoal_logger import ExtractionError
-from modules.charcoal_parser import CharcoalParserHandler, get_paths_from_user
+from modules.charcoal_parser import CharcoalParserHandler, get_paths_from_user, PARSER_TWO, PARSER_ONE, PARSER_THREE, \
+    PARSER_FOUR, extract_with_filters, search_directories_for_files
 from modules.pebbles import extract_python_code, read_file_content, save_code_blocks_to_files
 from modules.coarse_sand import load_chat_logs, extract_code_blocks
 
@@ -104,29 +106,65 @@ def cli_menu():
                             save_code_blocks_to_files(content, export_path)
                             # Save the extracted code to a single file
                         with open(os.path.join(export_path, 'all_code.py'), 'a', encoding='utf-8') as f:
-                            f.write(f'\n\n# {file_path}\n')
-                            f.write('\n\n'.join(content))
-                            f.write('\n\n')
-                            print(f"{Fore.MAGENTA}Code extracted and saved from {file_path}{Style.RESET_ALL}")
+                            main_cli_parser(f, file_path, content)
                         # Save the extracted code to a single file
-
-                        elif content := extract_with_filters(open(file_path).read(),
-                                                             [PARSER_ONE, PARSER_TWO, PARSER_THREE, PARSER_FOUR]):
-                        # Save the extracted code to new files
-                        save_code_blocks_to_files(content, export_path)
-                        # Save the extracted code to a single file
-
-                        with open(os.path.join(export_path, 'all_code.py'), 'a', encoding='utf-8') as f:
-                            f.write(f'\n\n# {file_path}\n')
+                        with open(os.path.join(export_path, 'all_code.py'), 'w', encoding='utf-8') as f:
                             f.write('\n\n'.join(content))
-                            f.write('\n\n')
-                            print(f"{Fore.MAGENTA}Code extracted and saved from {file_path}{Style.RESET_ALL}")
-                    else:
-                        print(f"{Fore.MAGENTA}No Python code found in {file_path}{Style.RESET_ALL}")
-            except AttributeError:
-            logging.error("An error occurred while extracting code.", exc_info=True)
-            print(f"{Fore.RED}An error occurred. Details have been logged.{Style.RESET_ALL}")
+                            print(
+                                f"{Fore.MAGENTA}Code extracted and saved to single file: all_code.py{Style.RESET_ALL}")
 
+                except AttributeError:
+                    logging.error("An error occurred while extracting code.", exc_info=True)
+                    print(f"{Fore.RED}An error occurred. Details have been logged.{Style.RESET_ALL}")
+        elif choice == '2':
+            import_path = input("Enter the path to your import directory: ")
+            export_path = input("Enter the path to your export directory: ")
+        elif choice == '3':
+            if import_path:
+                print(f"Import path: {import_path}")
+            if export_path:
+                print(f"Export path: {export_path}")
+            else:
+                print(f"{Fore.RED}Export path is not set. Please set it first.{Style.RESET_ALL}")
+        elif choice == '4':
+            print(f"{Fore.BLUE}Exiting the program. Goodbye!{Style.RESET_ALL}")
+            break
+        else:
+            print(f"{Fore.RED}Invalid user_selection, please try again.{Style.RESET_ALL}")
+            # Save the extracted code to new files
+            save_code_blocks_to_files(content, export_path)
+            # Save the extracted code to a single file
+
+            with open(os.path.join(export_path, 'all_code.py'), 'a', encoding='utf-8') as f:
+                main_cli_parser(f, file_path, content)
+                if content:
+                    print(f"{Fore.MAGENTA}Code extracted and saved from {file_path}{Style.RESET_ALL}")
+                else:
+                    print(f"{Fore.MAGENTA}No Python code found in {file_path}{Style.RESET_ALL}")
+
+def main_cli_parser(f, file_path, content):
+    f.write(f'\n\n# {file_path}\n')
+    f.write('\n\n'.join(content))
+    f.write('\n\n')
+    print(f"{Fore.MAGENTA}Code extracted and saved from {file_path}{Style.RESET_ALL}")
+    else:
+    print(f"{Fore.MAGENTA}No Python code found in {file_path}{Style.RESET_ALL}")
+    print()
+# Save the extracted code to new files
+save_code_blocks_to_files(content, export_path)
+# Save the extracted code to a single file
+
+with open(os.path.join(export_path, 'all_code.py'), 'a', encoding='utf-8') as f:
+    f.write(f'\n\n# {file_path}\n')
+    f.write('\n\n'.join(content))
+    f.write('\n\n')
+    print(f"{Fore.MAGENTA}Code extracted and saved from {file_path}{Style.RESET_ALL}")
+    else:
+    print(f"{Fore.MAGENTA}No Python code found in {file_path}{Style.RESET_ALL}")
+print()
+except AttributeError:
+logging.error("An error occurred while extracting code.", exc_info=True)
+print(f"{Fore.RED}An error occurred. Details have been logged.{Style.RESET_ALL}")
 elif choice == '2':
 import_path = input("Enter the path to your import directory: ")
 export_path = input("Enter the path to your export directory: ")
@@ -136,12 +174,24 @@ if import_path:
 if export_path:
     print(f"Export path: {export_path}")
 else:
-    print("No paths have been set.")
+    print(f"{Fore.RED}Export path is not set. Please set it first.{Style.RESET_ALL}")
 elif choice == '4':
 print(f"{Fore.BLUE}Exiting the program. Goodbye!{Style.RESET_ALL}")
 break
 else:
-print(f"{Fore.RED}Invalid choice, please try again.{Style.RESET_ALL}")
+print(f"{Fore.RED}Invalid user_selection, please try again.{Style.RESET_ALL}")
+# Save the extracted code to new files
+save_code_blocks_to_files(content, export_path)
+# Save the extracted code to a single file
+
+with open(os.path.join(export_path, 'all_code.py'), 'a', encoding='utf-8') as f:
+    f.write(f'\n\n# {file_path}\n')
+    f.write('\n\n'.join(content))
+    f.write('\n\n')
+    print(f"{Fore.MAGENTA}Code extracted and saved from {file_path}{Style.RESET_ALL}")
+    else:
+    print(f"{Fore.MAGENTA}No Python code found in {file_path}{Style.RESET_ALL}")
+print()
 
 
 def cli_menu():
