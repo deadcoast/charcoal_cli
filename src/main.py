@@ -106,38 +106,33 @@ def python_entrypoint_reference(value: str) -> bool:
 
     return all(python_identifier(i) for i in identifiers)
 
-
-def load_chat_logs(file_path):
-    """
-    Load the content of a chat log file.
-    """
-    try:
-        with open(file_path, 'r') as file:
-            return file.read()
-    except ValueError:
-        logging.error("Error loading chat logs", exc_info=True)
-        return None
-
-
-def extract_code_blocks(chat_logs):
-    """
-    Advanced regex pattern to extract Python code blocks.
-    """
-    code_pattern = re.compile(r'```python\n(.*?)```', re.DOTALL)
-    try:
-        return [match.strip() for match in code_pattern.findall(chat_logs)]
-    except ArithmeticError:
-        logging.error("Error extracting code blocks", exc_info=True)
-        return None
-
-
 # Exception for handling extraction related errors
 class ExtractionError(Exception):
     """Exception raised for errors that occur during code extraction."""
 
-    def __init__(self, message, details=None):
+    def __init__(self, message: str, details: Optional[str] = None) -> None:
+        """
+        Initialize the class instance.
+
+        Args:
+            message (str): The message to be passed to the superclass.
+            details (Optional[str]): Additional details for the instance.
+
+        Returns:
+            None
+        """
         super().__init__(message)
-        self.details = details
+        self._details = None
+
+        @property
+        def details(self):
+            return self._details
+
+        @details.setter
+        def details(self, value):
+            if value is not None:
+                # Perform validation logic here
+                self._details = value
 
     def __str__(self):
         return "An error occurred during code extraction."
