@@ -1,6 +1,7 @@
 import re
 import os
 
+
 def load_chat_logs(file_path):
     """
     Load the content of a chat log file.
@@ -8,13 +9,14 @@ def load_chat_logs(file_path):
     with open(file_path, 'r') as file:
         return file.read()
 
+
 def extract_code_blocks(chat_logs):
     """
     Extract Python code blocks enclosed within triple backticks.
     """
     code_pattern = re.compile(r'```python\n(.*?)```', re.DOTALL)
-    code_blocks = [match.strip() for match in code_pattern.findall(chat_logs)]
-    return code_blocks
+    return [match.strip() for match in code_pattern.findall(chat_logs)]
+
 
 def save_extracted_code(code_blocks, directory='extracted_code', single_file=False):
     """
@@ -31,6 +33,7 @@ def save_extracted_code(code_blocks, directory='extracted_code', single_file=Fal
             with open(file_path, 'w') as file:
                 file.write(code)
 
+
 def main(log_file_path):
     """
     Main function to load chat logs, extract Python code, and save them.
@@ -38,6 +41,7 @@ def main(log_file_path):
     chat_logs = load_chat_logs(log_file_path)
     code_blocks = extract_code_blocks(chat_logs)
     save_extracted_code(code_blocks)
+
 
 # Call the main function with the path to your chat log
 main('path_to_your_chat_log.txt')
